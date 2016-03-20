@@ -10,22 +10,6 @@
     android:paddingTop="0dp"
     tools:context=".ui.activity.IndexActivity">
 
-    <RelativeLayout
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentTop="true"
-        android:background="#353333">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="友云"
-            android:textColor="@android:color/white"
-            android:textSize="25sp" />
-    </RelativeLayout>
-
 
     <LinearLayout
         android:id="@+id/linear_layout_bottom"
@@ -127,11 +111,12 @@
         android:background="#bebcbc"
         android:orientation="horizontal" />
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/dividing_line"
+        android:layout_alignParentTop="true"
         android:layout_below="@id/title" />
 
 </RelativeLayout>

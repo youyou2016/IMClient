@@ -12,11 +12,11 @@ import com.liangzhenyou.imclient.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ChatFragment extends Fragment {
+public class PersonalFragment extends Fragment {
 
-    private final static String TAG = "ChatFragment";
+    private final static String TAG = "PersonalFragment";
 
-    public ChatFragment() {
+    public PersonalFragment() {
         // Required empty public constructor
     }
 
@@ -25,7 +25,7 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
+        return inflater.inflate(R.layout.fragment_personal, container, false);
     }
 
 }

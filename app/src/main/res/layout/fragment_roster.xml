@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.liangzhenyou.imclient.ui.fragment.ChatFragment">
+    tools:context="com.liangzhenyou.imclient.ui.fragment.RosterFragment">
+
 
     <RelativeLayout
         android:id="@+id/title"
@@ -16,14 +17,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="会话"
+            android:text="联系人"
             android:textColor="@android:color/white"
             android:textSize="22sp" />
     </RelativeLayout>
-
+    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="roster fragment" />
 
 </LinearLayout>
