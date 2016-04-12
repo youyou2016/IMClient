@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,10 +27,15 @@ import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smack.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 public class ChatContentActivity extends AppCompatActivity {
+
+    private static final String TAG = "ChatContentActivity";
 
 
     private Button sendTextButton;
@@ -71,14 +78,7 @@ public class ChatContentActivity extends AppCompatActivity {
                         break;
                     default:
                 }
-                arrayList = dataBaseUtils.getMyMessageFromDatabase(uerJid);
-                arrayList = dataBaseUtils.getMyMessageFromDatabase(uerJid);
-
-                adapter = new ChatContentListviewAdapter(getApplicationContext(), arrayList);
-
-                contentListview.setAdapter(adapter);
-
-                contentListview.setSelection(adapter.getCount() - 1);
+                adapter.notifyDataSetChanged();
             }
         };
 
@@ -106,13 +106,19 @@ public class ChatContentActivity extends AppCompatActivity {
             @Override
             public void chatCreated(Chat chat, boolean createdLocally) {
                 if (!createdLocally) {
+                    Set set = chat.getListeners();
+                    Iterator iterator = set.iterator();
+                    while (iterator.hasNext()) {
+                        chat.removeMessageListener((ChatMessageListener) iterator.next());
+                    }
                     chat.addMessageListener(new ChatMessageListener() {
                         @Override
                         public void processMessage(Chat chat, org.jivesoftware.smack.packet.Message message) {
                             MyMessage myMessage = MessageUtils.getMyMessageByMessage(message);
-                            if (dataBaseUtils.setMyMessageToDatabase(myMessage)) {
-                                mHandler.sendEmptyMessage(1);
-                            }
+                            Log.d(TAG, "!createLocally, add message " + myMessage.getBody());
+                            arrayList.add(myMessage);
+                            mHandler.sendEmptyMessage(1);
+                            dataBaseUtils.setMyMessageToDatabase(myMessage);
                         }
                     });
                 }
@@ -123,9 +129,10 @@ public class ChatContentActivity extends AppCompatActivity {
             @Override
             public void processMessage(Chat chat, org.jivesoftware.smack.packet.Message message) {
                 MyMessage myMessage = MessageUtils.getMyMessageByMessage(message);
-                if (dataBaseUtils.setMyMessageToDatabase(myMessage)) {
-                    mHandler.sendEmptyMessage(1);
-                }
+                Log.d(TAG, "createChat, add message " + myMessage.getBody());
+                arrayList.add(myMessage);
+                mHandler.sendEmptyMessage(1);
+                dataBaseUtils.setMyMessageToDatabase(myMessage);
             }
         });
 
@@ -133,16 +140,20 @@ public class ChatContentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    String data = editText.getText().toString();
+                    if(StringUtils.isEmpty(data)){
+                        return;
+                    }
                     MyMessage myMessage = new MyMessage();
                     myMessage.setORIGIN(MyMessage.ORIGIN_LOCAL);
-                    myMessage.setDateFormat(String.valueOf(System.currentTimeMillis()));
+                    myMessage.setDateFormat((DateFormat.format("MM/dd/yy h:mmaa", System.currentTimeMillis()).toString()));
                     myMessage.setUserJid(uerJid);
-                    myMessage.setBody(editText.getText().toString());
+                    myMessage.setBody(data);
                     myMessage.setTYPE(MyMessage.TYPE_TEXT);
                     chat.sendMessage(myMessage.getTYPE() + myMessage.getBody());
-                    if (dataBaseUtils.setMyMessageToDatabase(myMessage)) {
-                        mHandler.sendEmptyMessage(0);
-                    }
+                    arrayList.add(myMessage);
+                    mHandler.sendEmptyMessage(0);
+                    dataBaseUtils.setMyMessageToDatabase(myMessage);
 
                 } catch (SmackException.NotConnectedException e) {
                     e.printStackTrace();

@@ -76,12 +76,19 @@ public class ChatContentListviewAdapter extends BaseAdapter {
         } else {
             view = convertView;
             viewHolder = (ViewHolder) convertView.getTag();
+            initView(viewHolder);
         }
 
         initViewByMyMessage(arrayList.get(position), viewHolder);
 
 
         return view;
+    }
+
+    public void initView(ViewHolder viewHolder) {
+        viewHolder.reLayoutRight.setVisibility(View.GONE);
+        viewHolder.reLayoutLeft.setVisibility(View.GONE);
+        viewHolder.textViewTime.setText("");
     }
 
     public void initViewByMyMessage(MyMessage myMessage, ViewHolder holder) {

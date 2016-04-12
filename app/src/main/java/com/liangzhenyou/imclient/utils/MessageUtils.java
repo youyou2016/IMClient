@@ -1,5 +1,7 @@
 package com.liangzhenyou.imclient.utils;
 
+import android.text.format.DateFormat;
+
 import com.liangzhenyou.imclient.dao.MyMessage;
 
 import org.jivesoftware.smack.packet.Message;
@@ -19,7 +21,7 @@ public class MessageUtils {
         myMessage.setUserJid(str[0]);
         myMessage.setBody(newBody);
         myMessage.setORIGIN(MyMessage.ORIGIN_REMOTE);
-        myMessage.setDateFormat(String.valueOf(System.currentTimeMillis()));
+        myMessage.setDateFormat((DateFormat.format("MM/dd/yy h:mmaa",System.currentTimeMillis()).toString()));
 
         return myMessage;
     }

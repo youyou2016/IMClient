@@ -30,6 +30,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_toRightOf="@id/chat_content_listview_item_icon_left"
                 android:textSize="14sp"
+                android:background="@drawable/left"
                 tools:text="text" />
         </RelativeLayout>
 
@@ -53,7 +54,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/right"
                 android:layout_toLeftOf="@id/chat_content_listview_item_icon_right"
                 android:textSize="14sp"
                 tools:text="text" />
@@ -66,7 +68,7 @@
         android:id="@+id/chat_content_listview_item_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="2dp"
         android:gravity="center_horizontal"
         android:textSize="10sp"
         tools:text="11:00" />
