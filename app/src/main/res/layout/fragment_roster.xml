@@ -21,10 +21,12 @@
             android:textColor="@android:color/white"
             android:textSize="22sp" />
     </RelativeLayout>
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <ListView
+        android:id="@+id/roster_listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="roster fragment" />
+        android:layout_height="match_parent">
+
+    </ListView>
 
 </LinearLayout>

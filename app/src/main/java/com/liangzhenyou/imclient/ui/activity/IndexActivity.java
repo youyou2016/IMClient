@@ -12,9 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.liangzhenyou.imclient.R;
+import com.liangzhenyou.imclient.dao.DataBaseUtils;
+import com.liangzhenyou.imclient.dao.MyMessage;
+import com.liangzhenyou.imclient.db.SQLiteDatabaseHelper;
 import com.liangzhenyou.imclient.ui.fragment.ChatFragment;
 import com.liangzhenyou.imclient.ui.fragment.PersonalFragment;
 import com.liangzhenyou.imclient.ui.fragment.RosterFragment;
+
+import java.text.DateFormat;
 
 
 public class IndexActivity extends FragmentActivity {
@@ -66,6 +71,18 @@ public class IndexActivity extends FragmentActivity {
         }
 
         setTabSelection(INDEX_CHAT);
+
+       SQLiteDatabaseHelper sqLiteDatabaseHelper = new SQLiteDatabaseHelper(this);
+
+
+       /*DataBaseUtils dataBaseUtils = new DataBaseUtils(sqLiteDatabaseHelper.getWritableDatabase());
+        MyMessage myMessage = new MyMessage();
+        myMessage.setORIGIN(1);
+        myMessage.setBody("hello");
+        myMessage.setTYPE(0);
+        myMessage.setUserJid("lzl@youyou-pc");
+        myMessage.setDateFormat(String.valueOf(System.currentTimeMillis()));
+        dataBaseUtils.setMyMessageToDatabase(myMessage);*/
 
     }
 
