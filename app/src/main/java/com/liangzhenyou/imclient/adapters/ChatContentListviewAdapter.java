@@ -97,10 +97,22 @@ public class ChatContentListviewAdapter extends BaseAdapter {
         //消息从本地发到远程
         if (myMessage.getORIGIN() == MyMessage.ORIGIN_LOCAL) {
             holder.reLayoutRight.setVisibility(View.VISIBLE);
-            holder.textViewRight.setText(myMessage.getBody());
-        } else {
+            if (myMessage.getTYPE() == MyMessage.TYPE_TEXT) {
+                holder.textViewRight.setText(myMessage.getBody());
+            } else if (myMessage.getTYPE() == MyMessage.TYPE_AUDIO) {
+                holder.textViewRight.setText("语音");
+            } else {
+
+            }
+        } else if (myMessage.getORIGIN() == MyMessage.ORIGIN_REMOTE) {
             holder.reLayoutLeft.setVisibility(View.VISIBLE);
-            holder.textViewLeft.setText(myMessage.getBody());
+
+            if (myMessage.getTYPE() == MyMessage.TYPE_TEXT) {
+                holder.textViewLeft.setText(myMessage.getBody());
+            } else if (myMessage.getTYPE() == MyMessage.TYPE_AUDIO) {
+                holder.textViewLeft.setText("语音");
+            }
+
         }
 
     }

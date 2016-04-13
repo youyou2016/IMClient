@@ -18,6 +18,7 @@ import com.liangzhenyou.imclient.db.SQLiteDatabaseHelper;
 import com.liangzhenyou.imclient.ui.fragment.ChatFragment;
 import com.liangzhenyou.imclient.ui.fragment.PersonalFragment;
 import com.liangzhenyou.imclient.ui.fragment.RosterFragment;
+import com.liangzhenyou.imclient.utils.FileUtils;
 
 import java.text.DateFormat;
 
@@ -72,7 +73,9 @@ public class IndexActivity extends FragmentActivity {
 
         setTabSelection(INDEX_CHAT);
 
-       SQLiteDatabaseHelper sqLiteDatabaseHelper = new SQLiteDatabaseHelper(this);
+        SQLiteDatabaseHelper sqLiteDatabaseHelper = new SQLiteDatabaseHelper(this);
+
+        FileUtils.init(this);
 
 
        /*DataBaseUtils dataBaseUtils = new DataBaseUtils(sqLiteDatabaseHelper.getWritableDatabase());

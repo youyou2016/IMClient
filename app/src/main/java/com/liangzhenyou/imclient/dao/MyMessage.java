@@ -46,7 +46,7 @@ public class MyMessage {
         this.body = body;
     }
 
-    //消息的主体
+    //消息的主体,文本信息的内容，图片和语音的文件存储路径
     private String body;
 
     public String getDateFormat() {
