@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -11,15 +12,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.liangzhenyou.imclient.R;
 import com.liangzhenyou.imclient.adapters.ChatContentListviewAdapter;
-import com.liangzhenyou.imclient.dao.DataBaseUtils;
-import com.liangzhenyou.imclient.dao.MyMessage;
+import com.liangzhenyou.imclient.dao.CustomMessage;
+import com.liangzhenyou.imclient.utils.DataBaseUtils;
 import com.liangzhenyou.imclient.db.SQLiteDatabaseHelper;
 import com.liangzhenyou.imclient.manager.XmppconnectionManager;
 import com.liangzhenyou.imclient.utils.FileUtils;
@@ -34,8 +35,8 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.StringUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -58,24 +59,30 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
 
     private ListView contentListview;
 
+
     private SQLiteDatabaseHelper sqLiteDatabaseHelper;
 
     private SQLiteDatabase sqLiteDatabase;
 
     private DataBaseUtils dataBaseUtils;
 
-    public static ArrayList<MyMessage> arrayList = new ArrayList<>();
+    public static ArrayList<CustomMessage> arrayList = new ArrayList<>();
 
     public static ChatContentListviewAdapter adapter = null;
 
     private XMPPTCPConnection xmpptcpConnection;
 
-    private Handler mHandler;
+    private MyHandler myHandler;
+
+    /**
+     * 用户的jid
+     */
+    private String userJid;
 
     /**
      * 聊天目标的jid
      */
-    private String userJid;
+    private String rosterJid;
 
     /**
      * 聊天对象
@@ -83,17 +90,19 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
     private Chat mChat;
 
     /**
-     * 用于语音播放
-     */
-    private MediaPlayer mPlayer = null;
-    /**
      * 用于完成录音
      */
     private MediaRecorder mRecorder = null;
 
+    private long recorderStartTime = 0;
+
+    private long recorderStopTime = 0;
+
     private String audioFileDir = null;
 
     private String fileName = null;
+
+
     //private List<HashMap>
 
     @Override
@@ -103,23 +112,11 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
 
         Intent intent = getIntent();
         Bundle b = intent.getExtras();
-        userJid = b.getString("name");
-        mPlayer = new MediaPlayer();
+        rosterJid = b.getString("name");
 
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case 0:
-                        editText.setText("");
-                        break;
-                    default:
-                }
-                adapter.notifyDataSetChanged();
-            }
-        };
+        myHandler = new MyHandler(this);
 
-        mPlayer = new MediaPlayer();
+
         mRecorder = new MediaRecorder();
         audioFileDir = new File(getExternalFilesDir(null) + "/audio").toString();
 
@@ -134,6 +131,41 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
 
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        initData();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        adapter.stopMediaPlayer();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            String path = FileUtils.getRealFilePath(this, uri);
+            Log.d(TAG, "path is " + path);
+
+            CustomMessage customMessage = MessageUtils.createCustomMessage(CustomMessage.TYPE_IMAGE, userJid, rosterJid, path);
+            try {
+                mChat.sendMessage(MessageUtils.getMessageByCustomMessage(customMessage));
+                dataBaseUtils.setMyMessageToDatabase(customMessage);
+                arrayList.add(customMessage);
+                myHandler.sendEmptyMessage(1);
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void initView() {
         sendTextButton = (Button) findViewById(R.id.chat_content_text_send);
         editText = (EditText) findViewById(R.id.chat_content_edit);
@@ -141,36 +173,22 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
         sendImageButton = (Button) findViewById(R.id.chat_content_imag_send);
         contentListview = (ListView) findViewById(R.id.chat_content_listview);
 
+
         sendImageButton.setOnTouchListener(this);
         sendAudioButton.setOnTouchListener(this);
         sendTextButton.setOnTouchListener(this);
 
-        contentListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MyMessage myMessage = arrayList.get(position);
-                if (myMessage.getTYPE() == MyMessage.TYPE_AUDIO) {
-                    try {
-                        mPlayer.reset();
-                        File file = new File(myMessage.getBody());
-                        FileInputStream fis = new FileInputStream(file);
-                        mPlayer.setDataSource(fis.getFD());
-                        mPlayer.prepare();
-                        mPlayer.start();
-                        Log.d(TAG, "mPlayer is playing");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
     }
 
     public void initData() {
+
+        String str = xmpptcpConnection.getUser();
+        userJid = str.split("/")[0];
+
         sqLiteDatabaseHelper = new SQLiteDatabaseHelper(this);
         sqLiteDatabase = sqLiteDatabaseHelper.getWritableDatabase();
         dataBaseUtils = new DataBaseUtils(sqLiteDatabase);
-        arrayList = dataBaseUtils.getMyMessageFromDatabase(userJid);
+        arrayList = dataBaseUtils.getMyMessageFromDatabase(userJid, rosterJid);
         adapter = new ChatContentListviewAdapter(this, arrayList);
 
         contentListview.setAdapter(adapter);
@@ -178,7 +196,30 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
 
     public void initChat() {
         ChatManager manager = ChatManager.getInstanceFor(xmpptcpConnection);
+        Set<ChatManagerListener> set = manager.getChatListeners();
+        Iterator iterator = set.iterator();
+        while (iterator.hasNext()) {
+            manager.removeChatListener((ChatManagerListener) iterator.next());
+        }
+        manager.addChatListener(new ChatManagerListener() {
+            @Override
+            public void chatCreated(Chat chat, boolean createdLocally) {
+                chat.addMessageListener(new ChatMessageListener() {
+                    @Override
+                    public void processMessage(Chat chat, org.jivesoftware.smack.packet.Message message) {
+                        CustomMessage customMessage = MessageUtils.getCustomMessageByMessage(message);
+                        Log.d(TAG, "!createLocally, add message " + customMessage.getBody());
+                        arrayList.add(customMessage);
+                        myHandler.sendEmptyMessage(1);
+                        dataBaseUtils.setMyMessageToDatabase(customMessage);
+                    }
+                });
+            }
+        });
+        mChat = manager.createChat(rosterJid);
+    }
 
+/*
         manager.addChatListener(new ChatManagerListener() {
             @Override
             public void chatCreated(Chat chat, boolean createdLocally) {
@@ -191,45 +232,44 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
                     chat.addMessageListener(new ChatMessageListener() {
                         @Override
                         public void processMessage(Chat chat, org.jivesoftware.smack.packet.Message message) {
-                            MyMessage myMessage = MessageUtils.getMyMessageByMessage(message);
+                            CustomMessage myMessage = MessageUtils.getCustomMessageByMessage(message);
                             Log.d(TAG, "!createLocally, add message " + myMessage.getBody());
                             arrayList.add(myMessage);
-                            mHandler.sendEmptyMessage(1);
+                            myHandler.sendEmptyMessage(1);
                             dataBaseUtils.setMyMessageToDatabase(myMessage);
                         }
                     });
                 }
             }
-        });
-        mChat = manager.createChat(userJid, new ChatMessageListener() {
+        });*/
+        /*mChat = manager.createChat(rosterJid, new ChatMessageListener() {
             @Override
             public void processMessage(Chat chat, org.jivesoftware.smack.packet.Message message) {
-                MyMessage myMessage = MessageUtils.getMyMessageByMessage(message);
+                CustomMessage myMessage = MessageUtils.getCustomMessageByMessage(message);
                 Log.d(TAG, "createChat, add message " + myMessage.getBody());
                 arrayList.add(myMessage);
-                mHandler.sendEmptyMessage(1);
+                myHandler.sendEmptyMessage(1);
                 dataBaseUtils.setMyMessageToDatabase(myMessage);
             }
-        });
-
-
-    }
+        });*/
 
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        MyMessage myMessage = null;
+        CustomMessage customMessage = null;
         String data = null;
         switch (v.getId()) {
             case R.id.chat_content_text_send:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    return false;
+                    Log.d(TAG, "motion down");
+                    return true;
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    data = editText.getText().toString();
+                    if (StringUtils.isEmpty(data)) {
+                        return true;
+                    }
+                    customMessage = MessageUtils.createCustomMessage(CustomMessage.TYPE_TEXT, userJid, rosterJid, data);
                 }
-                data = editText.getText().toString();
-                if (StringUtils.isEmpty(data)) {
-                    return false;
-                }
-                myMessage = MessageUtils.createMyMessage(MyMessage.TYPE_TEXT, userJid, data);
                 break;
             case R.id.chat_content_audio_send:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -239,22 +279,23 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
                         dir.mkdirs();
                     }
                     startRecorder(fileName);
-                    return false;
+                    return true;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    stopRecorder();
-                    myMessage = MessageUtils.createMyMessage(MyMessage.TYPE_AUDIO, userJid, fileName);
+                    if (!stopRecorder()) {
+                        return true;
+                    }
+                    customMessage = MessageUtils.createCustomMessage(CustomMessage.TYPE_AUDIO, userJid, rosterJid, fileName);
                 }
                 break;
 
             case R.id.chat_content_imag_send:
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    return false;
+                    return true;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     Intent intent = new Intent();
                     intent.setType("image/*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     startActivityForResult(intent, 1);
-
                 }
                 break;
 
@@ -262,13 +303,15 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
         }
 
         try {
-            if (myMessage == null) {
+            if (customMessage == null) {
                 return true;
             }
-            mChat.sendMessage(MessageUtils.getMessageByMyMessage(myMessage));
-            arrayList.add(myMessage);
-            mHandler.sendEmptyMessage(0);
-            dataBaseUtils.setMyMessageToDatabase(myMessage);
+            mChat.sendMessage(MessageUtils.getMessageByCustomMessage(customMessage));
+            arrayList.add(customMessage);
+            myHandler.sendEmptyMessage(0);
+            dataBaseUtils.setMyMessageToDatabase(customMessage);
+
+            Log.d(TAG, "sendMessage");
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
         }
@@ -290,13 +333,48 @@ public class ChatContentActivity extends AppCompatActivity implements View.OnTou
             e.printStackTrace();
         }
         mRecorder.start();
+
+        recorderStartTime = System.currentTimeMillis();
     }
 
-    public void stopRecorder() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
-
+    public boolean stopRecorder() {
+        if (mRecorder != null) {
+            recorderStopTime = System.currentTimeMillis();
+            if (recorderStopTime - recorderStartTime >= 1000) {
+                mRecorder.stop();
+                mRecorder.release();
+                mRecorder = null;
+                return true;
+            } else {
+                mRecorder.release();
+                Toast.makeText(this, "录音时间太短", Toast.LENGTH_SHORT).show();
+                mRecorder = null;
+            }
+        }
+        return false;
     }
+
+    private static class MyHandler extends Handler {
+        private WeakReference<ChatContentActivity> mActivity;
+
+        public MyHandler(ChatContentActivity activity) {
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    mActivity.get().editText.setText("");
+                    break;
+                case 1:
+                    break;
+                default:
+            }
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+
 }
 

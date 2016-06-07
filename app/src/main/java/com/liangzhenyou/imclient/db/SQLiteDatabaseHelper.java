@@ -31,13 +31,15 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table if not exists " + ROSTER_TABLE + "("
                         + "id integer primary key,"
                         + "user_jid varchar,"
+                        + "roster_jid varchar,"
                         + "user_name varchar,"
                         + "user_icon image)"
         );
         db.execSQL("create table if not exists " + MESSAGE_TABLE + "("
                         + "id integer primary key,"
-                        + "origin integer,"
+                        + "user_jid varchar,"
                         + "roster_jid varchar,"
+                        + "origin integer,"
                         + "message_type integer,"
                         + "message_body text,"
                         + "time integer)"
@@ -45,6 +47,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("create table if not exists " + CHAT_TABLE + "("
                         + "id integer primary key,"
+                        + "user_jid varchar,"
                         + "roster_jid varchar)"
         );
     }
@@ -53,6 +56,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
 
 
 

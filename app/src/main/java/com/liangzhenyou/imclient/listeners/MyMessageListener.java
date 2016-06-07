@@ -1,10 +1,9 @@
 package com.liangzhenyou.imclient.listeners;
 
-import com.liangzhenyou.imclient.dao.MyMessage;
+import com.liangzhenyou.imclient.dao.CustomMessage;
 import com.liangzhenyou.imclient.ui.activity.ChatContentActivity;
 import com.liangzhenyou.imclient.utils.MessageUtils;
 
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
@@ -16,8 +15,8 @@ public class MyMessageListener implements ChatMessageListener {
 
     @Override
     public void processMessage(Chat chat, Message message) {
-        MyMessage myMessage = MessageUtils.getMyMessageByMessage(message);
-        ChatContentActivity.arrayList.add(myMessage);
+        CustomMessage customMessage = MessageUtils.getCustomMessageByMessage(message);
+        ChatContentActivity.arrayList.add(customMessage);
         ChatContentActivity.adapter.notifyDataSetChanged();
     }
 }

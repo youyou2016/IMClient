@@ -7,7 +7,7 @@
 
 
     <RelativeLayout
-        android:id="@+id/title"
+        android:id="@+id/login_title"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"

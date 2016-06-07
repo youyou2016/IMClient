@@ -1,21 +1,19 @@
 package com.liangzhenyou.imclient.ui.fragment;
 
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.liangzhenyou.imclient.R;
 import com.liangzhenyou.imclient.manager.XmppconnectionManager;
+import com.liangzhenyou.imclient.ui.activity.UserSearchActivity;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.chat.Chat;
@@ -70,6 +68,7 @@ public class ChatFragment extends Fragment {
         return view;
 
     }
+
 
 
 }

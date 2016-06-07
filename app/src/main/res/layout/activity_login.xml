@@ -10,7 +10,7 @@
     tools:context="com.liangzhenyou.imclient.ui.activity.LoginAcitivity">
 
     <RelativeLayout
-        android:id="@+id/title"
+        android:id="@+id/login_title"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
@@ -26,10 +26,10 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/linear_layout_username"
+        android:id="@+id/login_linear_layout_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
+        android:layout_below="@id/login_title"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="100dp"
         android:orientation="horizontal">
@@ -41,17 +41,17 @@
             android:textSize="28sp" />
 
         <EditText
-            android:id="@+id/username_edittext"
+            android:id="@+id/login_username_edittext"
             android:layout_width="200dp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linear_layout_password"
+        android:id="@+id/login_linear_layout_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/linear_layout_username"
+        android:layout_below="@id/login_linear_layout_username"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="30dp"
         android:orientation="horizontal">
@@ -63,7 +63,7 @@
             android:textSize="28sp" />
 
         <EditText
-            android:id="@+id/password_edittext"
+            android:id="@+id/login_password_edittext"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:inputType="textPassword" />
@@ -71,9 +71,10 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/login_linear_layout_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/linear_layout_password"
+        android:layout_below="@id/login_linear_layout_password"
         android:layout_marginTop="10dp">
 
         <TextView
@@ -83,7 +84,7 @@
             android:layout_centerHorizontal="true" />
 
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/login_login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
@@ -91,13 +92,23 @@
             android:text="登陆" />
 
         <Button
-            android:id="@+id/register_button"
+            android:id="@+id/login_register_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/nothing"
             android:text="注册" />
 
+        <RadioButton
+            android:id="@+id/radio_record_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/login_login_button"
+            android:layout_below="@id/login_login_button"
+            android:layout_marginTop="3dp"
+            android:text="记住密码" />
+
     </RelativeLayout>
+
 
 </RelativeLayout>

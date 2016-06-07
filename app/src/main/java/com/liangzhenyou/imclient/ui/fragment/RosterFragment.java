@@ -1,10 +1,10 @@
 package com.liangzhenyou.imclient.ui.fragment;
 
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,7 +81,7 @@ public class RosterFragment extends Fragment {
             }
         }
 
-        SimpleAdapter simpleAdapter = new SimpleAdapter(getContext(), nameList, R.layout.roster_listview_item, new String[]{"name"}, new int[]{R.id.roster_listview_item_text});
+        SimpleAdapter simpleAdapter = new SimpleAdapter(getActivity(), nameList, R.layout.roster_listview_item, new String[]{"name"}, new int[]{R.id.roster_listview_item_text});
 
         rosterListView.setAdapter(simpleAdapter);
 

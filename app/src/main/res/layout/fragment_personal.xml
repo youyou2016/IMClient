@@ -7,7 +7,7 @@
 
 
     <RelativeLayout
-        android:id="@+id/title"
+        android:id="@+id/login_title"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
@@ -22,9 +22,11 @@
             android:textSize="22sp" />
     </RelativeLayout>
 
-    <TextView
+    <Button
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="personal fragment" />
+        android:layout_height="wrap_content"
+        android:onClick="searchActivity"
+        android:text="查找" />
 
 </LinearLayout>

@@ -1,10 +1,12 @@
 package com.liangzhenyou.imclient.ui.activity;
 
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -12,18 +14,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.liangzhenyou.imclient.R;
-import com.liangzhenyou.imclient.dao.DataBaseUtils;
-import com.liangzhenyou.imclient.dao.MyMessage;
-import com.liangzhenyou.imclient.db.SQLiteDatabaseHelper;
+import com.liangzhenyou.imclient.manager.XmppconnectionManager;
 import com.liangzhenyou.imclient.ui.fragment.ChatFragment;
 import com.liangzhenyou.imclient.ui.fragment.PersonalFragment;
 import com.liangzhenyou.imclient.ui.fragment.RosterFragment;
 import com.liangzhenyou.imclient.utils.FileUtils;
 
-import java.text.DateFormat;
 
 
-public class IndexActivity extends FragmentActivity {
+
+public class IndexActivity extends Activity {
 
     private static final String TAG = "IndexActivity";
 
@@ -45,13 +45,13 @@ public class IndexActivity extends FragmentActivity {
 
     private static final int INDEX_PERSONAL = 2;  //当前选中的tab为personal时对应的index
 
-    private Fragment chatFragment;  //聊天界面
+    private android.app.Fragment chatFragment;  //聊天界面
 
-    private Fragment rosterFragment;  //联系人界面
+    private android.app.Fragment rosterFragment;  //联系人界面
 
-    private Fragment personalFragment;  //个人设置页面
+    private android.app.Fragment personalFragment;  //个人设置页面
 
-    private FragmentManager fragmentManager; //fragment的管理类，用来控制fragment的显示与隐藏
+    private android.app.FragmentManager fragmentManager; //fragment的管理类，用来控制fragment的显示与隐藏
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class IndexActivity extends FragmentActivity {
 
         initView();
 
-        fragmentManager = getSupportFragmentManager();
+        fragmentManager = getFragmentManager();
         //如果savedInstanceState为空，那么程序上一次是正常关闭
         //如果savedInstanceState不为空，那么程序上一次是异常关闭，对象还没有被回收，
         //如果直接创建新的fragment，那么有可能会造成之前的fragment没有隐藏，画面重叠
@@ -73,20 +73,39 @@ public class IndexActivity extends FragmentActivity {
 
         setTabSelection(INDEX_CHAT);
 
-        SQLiteDatabaseHelper sqLiteDatabaseHelper = new SQLiteDatabaseHelper(this);
-
         FileUtils.init(this);
 
 
-       /*DataBaseUtils dataBaseUtils = new DataBaseUtils(sqLiteDatabaseHelper.getWritableDatabase());
-        MyMessage myMessage = new MyMessage();
-        myMessage.setORIGIN(1);
-        myMessage.setBody("hello");
-        myMessage.setTYPE(0);
-        myMessage.setUserJid("lzl@youyou-pc");
-        myMessage.setDateFormat(String.valueOf(System.currentTimeMillis()));
-        dataBaseUtils.setMyMessageToDatabase(myMessage);*/
+/*        XmppconnectionManager.addFriend("", "");
+        XmppconnectionManager.removeFriend("");*/
+    }
 
+    @Override
+    protected void onDestroy() {
+        XmppconnectionManager.getXmpptcpConnection().disconnect();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("提示");
+        builder.setMessage("确认退出吗？");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                IndexActivity.this.finish();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
     }
 
     /**
@@ -112,7 +131,7 @@ public class IndexActivity extends FragmentActivity {
     private void setTabSelection(int index) {
         clearSelection();
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+       FragmentTransaction transaction = fragmentManager.beginTransaction();
         hideFragments(transaction);
 
         switch (index) {
@@ -203,6 +222,12 @@ public class IndexActivity extends FragmentActivity {
 
             default:
         }
+    }
+
+
+    public void searchActivity(View view) {
+        Intent intent = new Intent(IndexActivity.this, UserSearchActivity.class);
+        startActivity(intent);
     }
 
 }

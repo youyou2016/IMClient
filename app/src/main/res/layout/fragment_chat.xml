@@ -6,7 +6,7 @@
     tools:context="com.liangzhenyou.imclient.ui.fragment.ChatFragment">
 
     <RelativeLayout
-        android:id="@+id/title"
+        android:id="@+id/login_title"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
@@ -24,6 +24,9 @@
     <ListView
         android:id="@+id/chat_listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></ListView>
+        android:layout_height="match_parent"
+        android:visibility="gone"></ListView>
+
+
 
 </LinearLayout>

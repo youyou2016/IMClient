@@ -1,12 +1,10 @@
 package com.liangzhenyou.imclient.dao;
 
-import android.text.format.DateFormat;
-
 /**
  * Created by youyou on 2016/4/10.
  * 消息的封装类
  */
-public class MyMessage {
+public class CustomMessage {
 
     public static final int TYPE_TEXT = 0;  //文本
     public static final int TYPE_IMAGE = 1;  //图片
@@ -61,6 +59,17 @@ public class MyMessage {
     private String dateFormat;
 
 
+    public String getRosterJid() {
+        return rosterJid;
+    }
+
+    public void setRosterJid(String rosterJid) {
+        this.rosterJid = rosterJid;
+    }
+
+    //消息的目标用户jid
+    private String rosterJid;
+
     public String getUserJid() {
         return userJid;
     }
@@ -69,7 +78,7 @@ public class MyMessage {
         this.userJid = userJid;
     }
 
-    //消息的目标用户jid
+    //消息的本地用户jid
     private String userJid;
 
 

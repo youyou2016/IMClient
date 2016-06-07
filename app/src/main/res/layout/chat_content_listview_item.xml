@@ -14,14 +14,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/chat_content_listview_item_icon_left"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:src="@drawable/person_normal" />
+
             <TextView
                 android:id="@+id/chat_content_listview_item_text_left"
                 android:layout_width="wrap_content"
@@ -29,9 +32,29 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_toRightOf="@id/chat_content_listview_item_icon_left"
-                android:textSize="14sp"
                 android:background="@drawable/left"
+                android:textSize="14sp"
+                android:visibility="gone"
                 tools:text="text" />
+
+            <TextView
+                android:id="@+id/chat_content_audio_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/chat_content_listview_item_icon_left"
+                android:background="@drawable/chatfrom_bg_normal"
+                android:text="语音"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/chat_content_image_left"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/chat_content_listview_item_icon_left"
+                android:visibility="gone" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -40,12 +63,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="5dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/chat_content_listview_item_icon_right"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:src="@drawable/person_normal" />
 
@@ -55,10 +80,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="2dp"
-                android:background="@drawable/right"
                 android:layout_toLeftOf="@id/chat_content_listview_item_icon_right"
+                android:background="@drawable/right"
                 android:textSize="14sp"
+                android:visibility="gone"
                 tools:text="text" />
+
+            <TextView
+                android:id="@+id/chat_content_audio_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/chat_content_listview_item_icon_right"
+                android:background="@drawable/chatto_bg_normal"
+                android:text="语音"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/chat_content_image_right"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@id/chat_content_listview_item_icon_right"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
